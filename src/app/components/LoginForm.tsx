@@ -38,8 +38,11 @@ export default function LoginForm(props: Props) {
     if (!result?.ok) {
       toast.error("Whoops...an error occured");
       return;
+    } else {
+      router.push(props.callbackUrl ? props.callbackUrl : "/");
+      toast.success("You are successfully logged in!");
+      return;
     }
-    router.push(props.callbackUrl ? props.callbackUrl : "/");
   };
 
   return (
