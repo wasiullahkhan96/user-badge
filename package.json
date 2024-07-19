@@ -9,20 +9,25 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@hookform/resolvers": "^3.9.0",
     "@prisma/client": "^5.17.0",
     "@tailwindcss/forms": "^0.5.7",
     "@types/bcrypt": "^5.0.2",
     "bcrypt": "^5.1.1",
+    "check-password-strength": "^2.0.10",
+    "clsx-tailwind-merge": "^1.0.4",
     "next": "14.2.5",
     "next-auth": "^4.24.7",
     "prisma": "^5.17.0",
     "react": "^18",
     "react-dom": "^18",
+    "react-hook-form": "^7.52.1",
+    "react-toastify": "^10.0.5",
     "zod": "^3.23.8"
   },
   "devDependencies": {
     "@types/node": "^20",
-    "@types/react": "^18",
+    "@types/react": "^18.3.3",
     "@types/react-dom": "^18",
     "eslint": "^8",
     "eslint-config-next": "14.2.5",

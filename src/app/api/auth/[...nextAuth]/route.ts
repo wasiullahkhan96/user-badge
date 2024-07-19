@@ -3,12 +3,16 @@ import { AuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import * as bcrypt from "bcrypt";
 import NextAuth from "next-auth/next";
+import { User } from "@prisma/client";
 
 export const authOptions: AuthOptions = {
+  pages: {
+    signIn: 'login'
+  },
   providers: [
     CredentialsProvider({
       name: "Credentials",
-      credentials: {
+      credentials: {  
         username: {
           label: "User Name",
           type: "text",
@@ -24,7 +28,6 @@ export const authOptions: AuthOptions = {
         if (!credentials) {
           throw new Error("No credentials provided");
         }
-
 
         if(!credentials.username){
             throw new Error('Please provide username')
@@ -57,6 +60,22 @@ export const authOptions: AuthOptions = {
       },
     }),
   ],
+  session: {
+    strategy: 'jwt'
+  },
+  callbacks: {
+    async jwt({ token, user }) {
+      // Initial sign-in
+      if(user){
+        token.user= user as User;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      session.user = token.user;
+      return session;
+    },
+  },  
 };
 
 
