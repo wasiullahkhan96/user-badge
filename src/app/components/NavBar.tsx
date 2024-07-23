@@ -20,7 +20,7 @@ const Navbar: React.FC = () => {
           <p className="text-white font-bold text-xl">Happy Badge</p>
           <button
             onClick={handleSignOut}
-            className="text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-5 py-2.5 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700"
+            className="text-white bg-indigo-300 hover:bg-indigo-400 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-5 py-2.5 dark:bg-indigo-600 dark:hover:bg-indigo-600 dark:focus:ring-gray-700 dark:border-gray-700"
           >
             Sign out
           </button>
