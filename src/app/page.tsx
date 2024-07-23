@@ -4,9 +4,12 @@ import Link from "next/link";
 import { useEffect } from "react";
 import Navbar from "./components/NavBar";
 import Homepage from "./components/Homepage";
+import { redirect } from "next/dist/server/api-utils";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
   const { data: session } = useSession();
+  const router = useRouter();
 
   return (
     <>
@@ -24,7 +27,7 @@ export default function Home() {
           </div>
         </div>
       ) : (
-        <div>no session</div>
+        router.push("/login")
       )}
     </>
   );

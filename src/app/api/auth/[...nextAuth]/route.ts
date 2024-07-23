@@ -4,15 +4,16 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import * as bcrypt from "bcrypt";
 import NextAuth from "next-auth/next";
 import { User } from "@prisma/client";
+import axios from "axios";
 
 export const authOptions: AuthOptions = {
   pages: {
-    signIn: 'login'
+    signIn: "login",
   },
   providers: [
     CredentialsProvider({
       name: "Credentials",
-      credentials: {  
+      credentials: {
         username: {
           label: "User Name",
           type: "text",
@@ -29,45 +30,48 @@ export const authOptions: AuthOptions = {
           throw new Error("No credentials provided");
         }
 
-        if(!credentials.username){
-            throw new Error('Please provide username')
+        if (!credentials.username) {
+          throw new Error("Please provide username");
         }
-        if(!credentials.password){
-            throw new Error('Please provide password')
+        if (!credentials.password) {
+          throw new Error("Please provide password");
         }
 
         // Replace with your own logic to find user in your database
         const user = await prisma.user.findUnique({
-            where:{
-                email: credentials.username
-            }
-          });
+          where: {
+            email: credentials.username,
+          },
+        });
 
         if (!user) {
           throw new Error("No user found with the given username");
         }
 
         // Replace with your own logic to validate the password
-        const isValidPassword = await bcrypt.compare(credentials.password, user.password);
+        const isValidPassword = await bcrypt.compare(
+          credentials.password,
+          user.password
+        );
 
         if (!isValidPassword) {
           throw new Error("Invalid password");
         }
 
         // If the user is authenticated, return the user object
-        const {password, ...userWithoutPass} = user;
+        const { password, ...userWithoutPass } = user;
         return userWithoutPass;
       },
     }),
   ],
   session: {
-    strategy: 'jwt'
+    strategy: "jwt",
   },
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger }) {
       // Initial sign-in
-      if(user){
-        token.user= user as User;
+      if (user) {
+        token.user = user as User;
       }
       return token;
     },
@@ -75,12 +79,9 @@ export const authOptions: AuthOptions = {
       session.user = token.user;
       return session;
     },
-  },  
+  },
 };
-
 
 const handler = NextAuth(authOptions);
 
-export {handler as GET, handler as POST};
-
-
+export { handler as GET, handler as POST };

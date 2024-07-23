@@ -7,6 +7,7 @@ import { z } from "zod";
 import PasswordStrength from "./PasswordStrength";
 import { registerUser } from "@/lib/actions/authActions";
 import { toast } from "react-toastify";
+import { useRouter } from "next/navigation";
 
 const FormSchema = z
   .object({
@@ -26,6 +27,7 @@ const FormSchema = z
 type InputType = z.infer<typeof FormSchema>;
 
 export default function SignupForm() {
+  const router = useRouter();
   const {
     register,
     handleSubmit,
@@ -39,8 +41,9 @@ export default function SignupForm() {
   const saveUser: SubmitHandler<InputType> = async (data) => {
     const { confirmPassword, ...user } = data;
     try {
-      const result = await registerUser(user);
-      toast.success("User created successfully!");
+      await registerUser(user);
+      router.push("/login");
+      toast.success("Your account has been created successfully!");
     } catch (error) {
       toast.error("Whoops... an error has occurred");
     }

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import ProviderWrapper from "./components/ProviderWrapper";
+import ProviderWrapper, { UserProvider } from "./components/ProviderWrapper";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
