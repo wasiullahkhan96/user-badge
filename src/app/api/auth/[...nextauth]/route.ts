@@ -1,14 +1,14 @@
-import prisma from "@/lib/prisma";
-import { AuthOptions } from "next-auth";
+// src/app/api/auth/[...nextauth]/route.ts
+
+import NextAuth, { AuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import * as bcrypt from "bcrypt";
-import NextAuth from "next-auth/next";
+import prisma from "@/lib/prisma"; // Adjust the path as necessary
 import { User } from "@prisma/client";
-import axios from "axios";
 
-export const authOptions: AuthOptions = {
+const authOptions: AuthOptions = {
   pages: {
-    signIn: "login",
+    signIn: "/login", // Ensure this path is correct
   },
   providers: [
     CredentialsProvider({
@@ -25,22 +25,23 @@ export const authOptions: AuthOptions = {
         },
       },
       async authorize(credentials) {
-        // Implement your logic to find and verify the user
         if (!credentials) {
           throw new Error("No credentials provided");
         }
 
-        if (!credentials.username) {
+        const { username, password } = credentials;
+
+        if (!username) {
           throw new Error("Please provide username");
         }
-        if (!credentials.password) {
+        if (!password) {
           throw new Error("Please provide password");
         }
 
-        // Replace with your own logic to find user in your database
+        // Find user in your database
         const user = await prisma.user.findUnique({
           where: {
-            email: credentials.username,
+            email: username, // Assuming username is an email
           },
         });
 
@@ -48,18 +49,15 @@ export const authOptions: AuthOptions = {
           throw new Error("No user found with the given username");
         }
 
-        // Replace with your own logic to validate the password
-        const isValidPassword = await bcrypt.compare(
-          credentials.password,
-          user.password
-        );
+        // Validate the password
+        const isValidPassword = await bcrypt.compare(password, user.password);
 
         if (!isValidPassword) {
           throw new Error("Invalid password");
         }
 
         // If the user is authenticated, return the user object
-        const { password, ...userWithoutPass } = user;
+        const { password: _, ...userWithoutPass } = user; // Exclude password
         return userWithoutPass;
       },
     }),
@@ -68,20 +66,21 @@ export const authOptions: AuthOptions = {
     strategy: "jwt",
   },
   callbacks: {
-    async jwt({ token, user, trigger }) {
-      // Initial sign-in
+    async jwt({ token, user }) {
       if (user) {
-        token.user = user as User;
+        token.user = user as User; // Type assertion if necessary
       }
       return token;
     },
     async session({ session, token }) {
-      session.user = token.user;
+      session.user = token.user; // Attach user to session
       return session;
     },
   },
 };
 
+// Create the NextAuth handler
 const handler = NextAuth(authOptions);
 
+// Export the handler for GET and POST requests
 export { handler as GET, handler as POST };

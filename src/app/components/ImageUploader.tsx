@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
@@ -55,8 +55,25 @@ const BadgeUpload: React.FC = () => {
         toast.success(response.data.message);
         setUser({ ...user, image: response.data.imageUrl });
       }
+      if (response.status === 400) {
+        toast.success(response.data.message);
+        setUser({ ...user, image: response.data.imageUrl });
+      }
     } catch (error) {
-      toast.error("Error uploading image.");
+      if (axios.isAxiosError(error) && error.response) {
+        // Check for 400 status code
+        if (error.response.status === 400) {
+          toast.error(error.response.data.message || "Bad Request");
+        } else {
+          // Handle other status codes if necessary
+          toast.error(
+            `Error: ${error.response.data.message || "An error occurred"}`
+          );
+        }
+      } else {
+        // Handle other types of errors (e.g., network errors)
+        toast.error("An unexpected error occurred");
+      }
     } finally {
       setAvatarLoading(false); // End loading state for avatar upload
     }
