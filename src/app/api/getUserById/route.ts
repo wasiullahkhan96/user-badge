@@ -1,7 +1,6 @@
-// app/api/fetchUserById/route.js
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route"; // Adjust the import based on your auth setup
-import { prisma } from "@/lib/prisma"; // Adjust the import based on your Prisma setup
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
