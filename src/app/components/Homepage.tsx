@@ -22,26 +22,39 @@ const Homepage: React.FC<HomepageProps> = ({ session }) => {
   }, [session?.user.id, setUser]);
 
   return (
-    <div>
-      <div className="px-4 sm:px-0 text-center mt-5">
-        <p>Welcome to Happy Badge {session?.user.image}</p>
-      </div>
-      <div className="mt-6 border-t border-gray-100">
-        <div className="flex justify-center">
-          <div>
-            <ImageUploader></ImageUploader>
-          </div>
-        </div>
-        <dl className="divide-y divide-gray-100">
-          <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-            <dt className="text-sm font-medium leading-6 text-gray-900">
-              Email address
-            </dt>
-            <dd className="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
-              {user ? user.email : "-"}
-            </dd>
-          </div>
-        </dl>
+    <div className="mt-6">
+      <div className="flex flex-col justify-center items-center">
+        {user ? (
+          <>
+            <div className="mt-4">
+              <ImageUploader />
+            </div>
+            <div className="overflow-x-auto bg-white mt-4 ">
+              <table className="min-w-full text-left text-sm whitespace-nowrap">
+                <tbody>
+                  <tr className="border-b ">
+                    <th scope="row" className="px-6 py-4">
+                      Email
+                    </th>
+                    <td className="px-6 py-4">{user.email}</td>
+                  </tr>
+                  <tr className="border-b ">
+                    <th scope="row" className="px-6 py-4">
+                      ID
+                    </th>
+                    <td className="px-6 py-4">{user.id}</td>
+                  </tr>
+                  <tr className="border-b ">
+                    <th scope="row" className="px-6 py-4">
+                      S3 Bucket Link
+                    </th>
+                    <td className="px-6 py-4">{user.image}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </>
+        ) : null}
       </div>
     </div>
   );

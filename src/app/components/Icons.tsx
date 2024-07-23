@@ -4,8 +4,8 @@ const UserCircleIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <div className="relative flex justify-center items-center">
     <svg
       viewBox="0 0 24 24"
-      width={128}
-      height={128}
+      width={240}
+      height={240}
       color={"#d1d5db"}
       fill={"none"}
       {...props}
