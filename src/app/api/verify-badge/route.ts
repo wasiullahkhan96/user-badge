@@ -188,11 +188,15 @@ export async function POST(req: NextRequest) {
           );
         }
       }
+
+      const message =
+        happyColorPercentage < 50 ? "Look for brighter colors!" : "Nice!";
       return NextResponse.json({
         isValid: true,
-        message: "Badge verified successfully!",
+        message: `Badge uploaded with a ${Math.floor(
+          happyColorPercentage
+        )}% happy percentage. ${message}`,
         imageUrl: result.Location,
-        happyColorPercentage: happyColorPercentage,
       });
     } catch (error) {
       return NextResponse.json(
