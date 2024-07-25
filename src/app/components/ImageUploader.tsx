@@ -91,7 +91,7 @@ const BadgeUpload: React.FC = () => {
           onChange={handleInputChange}
           ref={fileInputRef}
           style={{ display: "none" }} // Make the file input element invisible
-          accept="image/png"
+          accept="image/*"
         />
 
         {avatarLoading ? (
