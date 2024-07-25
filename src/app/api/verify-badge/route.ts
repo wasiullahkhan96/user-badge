@@ -1,4 +1,4 @@
-import { s3, params } from "@/lib/aws";
+import s3 from "@/lib/aws";
 import prisma from "@/lib/prisma";
 import { getToken } from "next-auth/jwt";
 import { getSession } from "next-auth/react";
@@ -120,7 +120,6 @@ export async function POST(req: NextRequest) {
     // If we've made it this far, the image is valid
 
     // First we need to upload the object in the S3 bucket
-    const props = params(file.name, buffer);
 
     try {
       // Retrieve the existing user's image key from the database
@@ -154,46 +153,57 @@ export async function POST(req: NextRequest) {
           );
         }
       }
+    } catch (error) {}
+
+    const params = {
+      Bucket: process.env.AWS_S3_BUCKET_NAME
+        ? process.env.AWS_S3_BUCKET_NAME
+        : "budge-bucket",
+      Key: `${Date.now()}_${file.name}`,
+      Body: buffer,
+      ContentType: "image/png",
+    };
+
+    try {
+      const result = await s3.upload(params).promise();
+
+      if (result) {
+        try {
+          // Update the user's image attribute using Prisma
+          const updatedUser = await prisma.user.update({
+            where: {
+              id: user.id,
+            },
+            data: {
+              image: result.Location,
+            },
+          });
+        } catch (error) {
+          return NextResponse.json(
+            {
+              isValid: false,
+              message: "There has been an error updating the user",
+            },
+            { status: 500 }
+          );
+        }
+      }
+      return NextResponse.json({
+        isValid: true,
+        message: "Badge verified successfully!",
+        imageUrl: result.Location,
+        happyColorPercentage: happyColorPercentage,
+      });
     } catch (error) {
       return NextResponse.json(
         {
           isValid: false,
-          message: "An error occurred while updating the user",
+          message: "An error occurred while uploading the image",
         },
         { status: 500 }
       );
+      // Handle the error as needed
     }
-
-    const result = await s3.upload(props).promise();
-
-    if (result) {
-      try {
-        // Update the user's image attribute using Prisma
-        const updatedUser = await prisma.user.update({
-          where: {
-            id: user.id,
-          },
-          data: {
-            image: result.Location, // Assuming the imageUrl is sent in the request body
-          },
-        });
-      } catch (error) {
-        return NextResponse.json(
-          {
-            isValid: false,
-            message: "There has been an error updating the user",
-          },
-          { status: 500 }
-        );
-      }
-    }
-
-    return NextResponse.json({
-      isValid: true,
-      message: "Badge verified successfully!",
-      imageUrl: result.Location,
-      happyColorPercentage: happyColorPercentage,
-    });
   } catch (error) {
     console.error("Error processing image:", error);
     return NextResponse.json(
