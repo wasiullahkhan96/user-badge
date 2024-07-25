@@ -134,18 +134,34 @@ export async function POST(req: NextRequest) {
         const existingImageKey = mongoUser.image?.split("/").pop() ?? "";
         const params = {
           Bucket: process.env.AWS_S3_BUCKET_NAME ?? "budge-bucket",
-          Key: existingImageKey, // Use the key of the existing image
+          Key: existingImageKey,
         };
         // Delete the existing image from S3
-        const result = await s3.deleteObject(params).promise();
         console.log("delete:", params);
-        console.log("delete:", result);
+        try {
+          const data = await s3.deleteObject(params).promise();
+        } catch (error) {
+          console.error(
+            `Error deleting ${existingImageKey} from ${params.Bucket}:`,
+            error
+          );
+          return NextResponse.json(
+            {
+              isValid: false,
+              message: "An error occurred while updating the image",
+            },
+            { status: 500 }
+          );
+        }
       }
     } catch (error) {
-      return NextResponse.json({
-        isValid: false,
-        message: "There has been a problem updating the image",
-      });
+      return NextResponse.json(
+        {
+          isValid: false,
+          message: "An error occurred while updating the user",
+        },
+        { status: 500 }
+      );
     }
 
     const result = await s3.upload(props).promise();
@@ -162,10 +178,13 @@ export async function POST(req: NextRequest) {
           },
         });
       } catch (error) {
-        NextResponse.json({
-          isValid: false,
-          message: "There has been an error updating the user",
-        });
+        return NextResponse.json(
+          {
+            isValid: false,
+            message: "There has been an error updating the user",
+          },
+          { status: 500 }
+        );
       }
     }
 
