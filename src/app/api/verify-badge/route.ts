@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
 
     // A circular mask is cast on the image so it takes a circular layout
     const processedImage = await image
-      // .resize(512, 512)
+      .resize(512, 512)
       .ensureAlpha()
       // .composite([
       //   {
